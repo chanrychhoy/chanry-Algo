@@ -9,8 +9,14 @@ WINDOW_WIDTH= 1000
 
 CORONA_WIDTH=50
 CORONA_HEIGHT=50
+
+CANDY_WIDTH=40
+CANDY_HEIGHT=40
 # GLOBAL VARIABLE
 colors=["pink","orange","green","blue","yellow","purple","lime"]
+arrayCorona=[]
+arrayPlayer=[]
+gameOver=False
 # movement in x direction
 dx=1
 # movement in y direction
@@ -25,7 +31,6 @@ def canMoveRight():
     return x2< WINDOW_WIDTH
 
 def onKeyRight(event):
-    global dx,dy
     if canMoveRight():
         postionPlayer = canvas.coords(playerId)
         canvas.move(playerId, 10, 0)
@@ -37,7 +42,6 @@ def canMoveLeft():
     return x1<WINDOW_WIDTH and x1!=0
 
 def onKeyLeft(event):
-    global dx,dy
     if canMoveLeft():
         postionPlayer = canvas.coords(playerId)
         canvas.move(playerId, -10, 0)
@@ -49,7 +53,6 @@ def canMoveUp():
     return y1<WINDOW_HEIGHT and y1!=0
 
 def onKeyUp(event):
-    global dx,dy
     if canMoveUp():
         postionPlayer = canvas.coords(playerId)
         canvas.move(playerId, 0, -10)
@@ -61,20 +64,36 @@ def canMoveDown():
     return y2<WINDOW_HEIGHT 
 
 def onKeyDown(event):
-    global dx,dy
     if canMoveDown():
         postionPlayer = canvas.coords(playerId)
         canvas.move(playerId, 0, 10)
+# candy
+def moveCandy():
+    canvas.move("moveCandy", 0,20)
+    canvas.after(200, lambda:moveCandy())
+def createCandy():
+    CandyX=random.randrange(0,1000)
+    CandyY=0
+    randomcolor = random.choice(colors)
+    candyId = canvas.create_oval(CandyX, CandyY, CandyX +CANDY_WIDTH,CandyY+CANDY_HEIGHT, fill=randomcolor, tags="moveCandy")
+    moveCandy()
+    canvas.after(1000, createCandy)
 # Monster
-def Corona():
-    canvas.move("Corona", 0,100)
-def collisionCorona():
-    coronaX=randfcom.randrange(0,1000)
+def moveCorona():
+    canvas.move("moveCorona", 0,20)
+    canvas.after(300, lambda:moveCorona())
+def createCorona():
+    coronaX=random.randrange(0,1000)
     coronaY=0
     randomcolor = random.choice(colors)
-    coronaId = canvas.create_rectangle(coronaX, coronaY, coronaX +CORONA_WIDTH,coronaY+CORONA_HEIGHT, fill=randomcolor, tags="Corona")
-    canvas.after(50, lambda:Corona())
-    canvas.after(1000, collisionCorona)
+    coronaId = canvas.create_rectangle(coronaX, coronaY, coronaX +CORONA_WIDTH,coronaY+CORONA_HEIGHT, fill=randomcolor, tags="moveCorona")
+    moveCorona()
+    canvas.after(2000, createCorona)
+    arrayCorona.append(coronaId)
+def manageCollisions():
+    for arrayPlayer in arrayCorona:
+        gameOver=True
+    return gameOver
 
 # GRAPHIC
 windows = tk.Tk() 
@@ -84,11 +103,13 @@ canvas = tk.Canvas(windows)
 playerX = WINDOW_WIDTH/ 2
 playerY = WINDOW_HEIGHT - 100 - PLAYER_HEIGHT
 playerId = canvas.create_oval(playerX, playerY, playerX + PLAYER_WIDTH, playerY + PLAYER_HEIGHT, fill="red")
+arrayPlayer.append(playerId)
 windows.bind("<Right>",onKeyRight)
 windows.bind("<Left>",onKeyLeft)
 windows.bind("<Up>",onKeyUp)
 windows.bind("<Down>",onKeyDown)
 # HERE YOU CAN START TO DRAW
-canvas.pack(expand=True, fill='botftth')
-collisionCorona()
+canvas.pack(expand=True, fill='both')
+createCorona()
+createCandy()
 windows.mainloop()      
