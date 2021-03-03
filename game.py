@@ -1,6 +1,5 @@
 import tkinter as tk
 import random
-from tkinter import messagebox
 # CONSTANT
 PLAYER_WIDTH = 50
 PLAYER_HEIGHT = 50
@@ -16,9 +15,9 @@ CANDY_HEIGHT=40
 # GLOBAL VARIABLE
 colors=["pink","orange","green","blue","yellow","purple","lime"]
 arrayCorona=[]
-mybg=tk.PhotoImage(file="images.png")
-canvas.create_image(0,0, anchor="nw", image=mybg)
 
+# arrayPlayer=[]
+gameOver=False
 # movement in x direction
 dx=1
 # movement in y direction
@@ -61,40 +60,38 @@ def onKeyUp(event):
 def canMoveDown():
     postionPlayer = canvas.coords(playerId)
     y2= postionPlayer[3]
+    print(y2)
     return y2<WINDOW_HEIGHT 
 
 def onKeyDown(event):
     if canMoveDown():
         postionPlayer = canvas.coords(playerId)
         canvas.move(playerId, 0, 10)
-
 # candy
 def moveCandy():
     canvas.move("moveCandy", 0,10)
-    canvas.after(1000, lambda:moveCandy())
+    canvas.after(500, lambda:moveCandy())
 def createCandy():
     CandyX=random.randrange(0,1000)
     CandyY=0
     randomcolor = random.choice(colors)
     candyId = canvas.create_oval(CandyX, CandyY, CandyX +CANDY_WIDTH,CandyY+CANDY_HEIGHT, fill=randomcolor, tags="moveCandy")
     moveCandy()
-    canvas.after(1000, createCandy)
+    canvas.after(2000, createCandy)
 # Monster
-
 def moveCorona():
-    # positionCovid=canvas.coords(createCorona())
     canvas.move("moveCorona", 0,10)
     canvas.after(300, lambda:moveCorona())
-    
 def createCorona():
-    positioncorona = []
     coronaX=random.randrange(0,1000)
     coronaY=0
     randomcolor = random.choice(colors)
     coronaId = canvas.create_rectangle(coronaX, coronaY, coronaX +CORONA_WIDTH,coronaY+CORONA_HEIGHT, fill=randomcolor, tags="moveCorona")
-    
     moveCorona()
     canvas.after(2000, createCorona)
+    arrayCorona.append(coronaId)
+def createText():  
+     canvas.create_text(100, 30, text="SCORE", fill="black", font=("Purisa",26))
     
 # GRAPHIC
 windows = tk.Tk() 
@@ -103,9 +100,9 @@ canvas = tk.Canvas(windows)
 
 # player
 playerX = WINDOW_WIDTH/ 2
-playerY=WINDOW_HEIGHT-100
-playerId = canvas.create_oval(playerX, playerY, playerX + PLAYER_WIDTH, playerY + PLAYER_HEIGHT, fill="red", tags="player")
-
+playerY = WINDOW_HEIGHT - 100 - PLAYER_HEIGHT
+playerId = canvas.create_oval(playerX, playerY, playerX + PLAYER_WIDTH, playerY + PLAYER_HEIGHT, fill="red")
+# arrayPlayer.append(playerId)
 windows.bind("<Right>",onKeyRight)
 windows.bind("<Left>",onKeyLeft)
 windows.bind("<Up>",onKeyUp)
@@ -114,4 +111,8 @@ windows.bind("<Down>",onKeyDown)
 canvas.pack(expand=True, fill='both')
 createCorona()
 createCandy()
+createText()
 windows.mainloop()      
+
+
+
