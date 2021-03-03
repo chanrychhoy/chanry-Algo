@@ -22,7 +22,9 @@ gameOver=False
 dx=1
 # movement in y direction
 dy=0
-
+# add background
+background=tk.PhotoImage(file="images.png")
+canvas.create_image(0,0,image=background)
 # FUNCTIONS
 def canMoveRight():
     postionPlayer = canvas.coords(playerId)
